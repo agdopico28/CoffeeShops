@@ -8,17 +8,26 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,7 +36,9 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.coffeeshops.ui.theme.FontTitle
 
 @Composable
 fun Portada( navController: NavHostController){
@@ -35,40 +46,6 @@ fun Portada( navController: NavHostController){
     val configuration = LocalConfiguration.current
     when (configuration.orientation) {
         Configuration.ORIENTATION_LANDSCAPE -> {
-            /*Column (modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
-                Spacer(modifier = Modifier.size(10.dp))
-                Image(
-                    painter = painterResource(id = R.drawable.play),
-                    contentDescription = "EmailImage",
-                    Modifier.width(50.dp).height(50.dp)
-                )
-                Spacer(modifier = Modifier.size(20.dp))
-                Text(
-                    text = stringResource(id = R.string.playJuegos),
-                    fontSize = 40.sp,
-                    textAlign = TextAlign.Center,
-                    fontFamily = FontTitle
-
-                )
-
-                Spacer(modifier = Modifier.size(50.dp))
-                Row{
-                    Button(onClick = {}, modifier = Modifier.width(200.dp).padding(15.dp,0.dp)) {
-                        Text(text = "Play")
-                    }
-                    Button(onClick = { navController.navigate("NewPlayer") }, modifier = Modifier.width(200.dp).padding(15.dp, 0.dp)) {
-                        Text(text = "New Play")
-                    }
-                }
-                Row{
-                    Button(onClick = { navController.navigate("Preferences")},modifier = Modifier.width(200.dp).padding(15.dp, 0.dp)) {
-                        Text(text = "Preferences")
-                    }
-                    Button(onClick = { /*TODO*/ }, modifier = Modifier.width(200.dp).padding(15.dp, 0.dp)) {
-                        Text(text = "About")
-                    }
-                }
-            }*/
         }
 
         else -> {
@@ -129,7 +106,7 @@ fun ItemsCoffe(cardCoffee: CardCoffee) {
     Card(
         Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(16.dp).clickable {},
         elevation = CardDefaults.cardElevation(10.dp)
     ) {
         Column (
@@ -138,13 +115,28 @@ fun ItemsCoffe(cardCoffee: CardCoffee) {
             Image(
                 painter = painterResource(id = cardCoffee.image),
                 contentDescription = "Coffee",
-                modifier=Modifier.fillMaxWidth().size(200.dp),
+                modifier= Modifier
+                    .fillMaxWidth()
+                    .size(200.dp),
                 contentScale = ContentScale.Crop
             )
-            Text(text = cardCoffee.name)
-            Text(text = cardCoffee.subbit)
+            Row( modifier= Modifier
+                .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center) {
+                Text(text = cardCoffee.name, fontFamily = FontTitle, fontSize = 30.sp)
+            }
+
+            Spacer(modifier = Modifier.size(10.dp))
+
+            RatingBar()
+            Spacer(modifier = Modifier.size(10.dp))
+            Row( modifier= Modifier
+                .fillMaxWidth().padding(start = 5.dp)) {
+                Text(text = cardCoffee.subbit)
+            }
+            Spacer(modifier = Modifier.size(10.dp))
             Divider()
-            Button(onClick = { /*TODO*/ }) {
+            TextButton(onClick = { /*TODO*/ }) {
                 Text(text = "Reserve")
 
             }
@@ -153,10 +145,33 @@ fun ItemsCoffe(cardCoffee: CardCoffee) {
 
 }
 @Composable
-fun RatingBar(modifier: Modifier = Modifier,
-              rating: Int = 0,
-              stars : Int = 5,
-              starsColor: Color = Color.Red){
-    val unifilledStars = (stars - Math.ceil(rating.toDouble())).toInt()
+fun RatingBar(
+    modifier: Modifier = Modifier,
+    stars: Int = 5,
+    starsColor: Color = Color.Magenta
+) {
+    var starStates by remember { mutableStateOf(List(stars) { false }) }
 
+
+    val onStarClick: (Int) -> Unit = { starIndex ->
+        starStates = starStates.mapIndexed { index, _ ->
+            index <= starIndex
+        }
+    }
+
+
+    Row(modifier = modifier) {
+        starStates.forEachIndexed { index, isFilled ->
+            Icon(
+                imageVector = Icons.Outlined.Star,
+                contentDescription = null,
+                tint = if (isFilled) starsColor else Color.Gray,
+                modifier = Modifier
+                    .padding(start = 10.dp)
+                    .clickable { onStarClick(index) }
+            )
+        }
+    }
 }
+
+
