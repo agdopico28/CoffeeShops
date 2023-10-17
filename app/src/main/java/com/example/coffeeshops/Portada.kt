@@ -1,9 +1,11 @@
 package com.example.coffeeshops
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,14 +17,25 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,21 +52,100 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.coffeeshops.ui.theme.FontTitle
+import com.example.coffeeshops.ui.theme.Pink40
+import com.example.coffeeshops.ui.theme.Pink80
 
+@OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun Portada( navController: NavHostController){
-
+    var isMenuVisible by remember { mutableStateOf(false) }
     val configuration = LocalConfiguration.current
     when (configuration.orientation) {
         Configuration.ORIENTATION_LANDSCAPE -> {
         }
 
         else -> {
+            Scaffold (topBar = { TopAppBar(
+                title = {
+                    Text(text = "CoffeeShops", color = Color.White, fontSize = 20.sp)
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Menu,
+                            contentDescription = null,
+                            tint = Color.White
+                        )
+                    }
+                },
+                actions = {
+                    Row (){
+                        IconButton(
+                            onClick = {
+                                isMenuVisible = true
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = null,
+                                tint = Color.White
+                            )
+                        }
+                    }
+                    Row (){
+                        DropdownMenu(
+                            expanded = isMenuVisible,
+                            onDismissRequest = {
+                                isMenuVisible = false
+                            },
+                            modifier = Modifier.background(Pink80)
+                        ) {
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = "Compartir",
+                                        color = Color.Black,
+                                        fontSize = 16.sp
+                                    )
+                                },
+                                onClick = { isMenuVisible = false },
+                                leadingIcon = {Icon(
+                                    imageVector = Icons.Default.Share,
+                                    contentDescription = null,
+                                    tint = Color.Black
+                                ) },
+                            )
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = "Album",
+                                        color = Color.Black,
+                                        fontSize = 16.sp
+                                    )
+                                },
+                                onClick = { isMenuVisible = false },
+                                leadingIcon = {Icon(
+                                    imageVector = Icons.Default.Lock,
+                                    contentDescription = null,
+                                    tint = Color.Black
+                                ) },
+                            )
+                        }
+                    }
+                },
+                colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = Pink40)
+            )}
+                ) {
+
             LazyColumn {
                 items(getCardCoffee()) { lazy ->
-                    ItemsCoffe(cardCoffee = lazy)
+                    ItemsCoffe(cardCoffee = lazy, navController= navController)
                 }
-            }
+            }}
 
         }
     }
@@ -102,11 +194,11 @@ fun getCardCoffee(): List<CardCoffee> {
     )
 }
 @Composable
-fun ItemsCoffe(cardCoffee: CardCoffee) {
+fun ItemsCoffe(cardCoffee: CardCoffee, navController: NavHostController) {
     Card(
         Modifier
             .fillMaxWidth()
-            .padding(16.dp).clickable {},
+            .padding(16.dp).clickable {navController.navigate("Comentarios/${cardCoffee.name}")},
         elevation = CardDefaults.cardElevation(10.dp)
     ) {
         Column (
@@ -137,7 +229,7 @@ fun ItemsCoffe(cardCoffee: CardCoffee) {
             Spacer(modifier = Modifier.size(10.dp))
             Divider()
             TextButton(onClick = { /*TODO*/ }) {
-                Text(text = "Reserve")
+                    Text(text = "RESERVE")
 
             }
         }
@@ -175,3 +267,9 @@ fun RatingBar(
 }
 
 
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MyTopAppBar(){
+    TopAppBar(title={ Text(text = "TopAppBar")})
+}
