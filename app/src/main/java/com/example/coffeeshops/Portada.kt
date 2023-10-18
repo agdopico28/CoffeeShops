@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -54,6 +55,9 @@ import androidx.navigation.NavHostController
 import com.example.coffeeshops.ui.theme.FontTitle
 import com.example.coffeeshops.ui.theme.Pink40
 import com.example.coffeeshops.ui.theme.Pink80
+import com.example.coffeeshops.ui.theme.Purple40
+import com.example.coffeeshops.ui.theme.PurpleGrey40
+import com.example.coffeeshops.ui.theme.PurpleGrey80
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -102,7 +106,7 @@ fun Portada( navController: NavHostController){
                             onDismissRequest = {
                                 isMenuVisible = false
                             },
-                            modifier = Modifier.background(Pink80)
+                            modifier = Modifier.background(PurpleGrey80)
                         ) {
                             DropdownMenuItem(
                                 text = {
@@ -137,15 +141,17 @@ fun Portada( navController: NavHostController){
                         }
                     }
                 },
-                colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = Pink40)
+                colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = Purple40)
             )}
                 ) {
-
-            LazyColumn {
-                items(getCardCoffee()) { lazy ->
-                    ItemsCoffe(cardCoffee = lazy, navController= navController)
+                Column (modifier= Modifier.padding(top = 60.dp)){
+                    LazyColumn {
+                        items(getCardCoffee()) { lazy ->
+                            ItemsCoffe(cardCoffee = lazy, navController= navController)
+                        }
+                    }}
                 }
-            }}
+
 
         }
     }
@@ -198,7 +204,8 @@ fun ItemsCoffe(cardCoffee: CardCoffee, navController: NavHostController) {
     Card(
         Modifier
             .fillMaxWidth()
-            .padding(16.dp).clickable {navController.navigate("Comentarios/${cardCoffee.name}")},
+            .padding(16.dp)
+            .clickable { navController.navigate("Comentarios/${cardCoffee.name}") },
         elevation = CardDefaults.cardElevation(10.dp)
     ) {
         Column (
@@ -223,12 +230,16 @@ fun ItemsCoffe(cardCoffee: CardCoffee, navController: NavHostController) {
             RatingBar()
             Spacer(modifier = Modifier.size(10.dp))
             Row( modifier= Modifier
-                .fillMaxWidth().padding(start = 5.dp)) {
+                .fillMaxWidth()
+                .padding(start = 5.dp)) {
                 Text(text = cardCoffee.subbit)
             }
             Spacer(modifier = Modifier.size(10.dp))
             Divider()
-            TextButton(onClick = { /*TODO*/ }) {
+            TextButton(onClick = { /*TODO*/ },
+                colors = ButtonDefaults.filledTonalButtonColors(
+                    containerColor = Color.Transparent, contentColor = Purple40
+            )) {
                     Text(text = "RESERVE")
 
             }
@@ -240,7 +251,7 @@ fun ItemsCoffe(cardCoffee: CardCoffee, navController: NavHostController) {
 fun RatingBar(
     modifier: Modifier = Modifier,
     stars: Int = 5,
-    starsColor: Color = Color.Magenta
+    starsColor: Color = Purple40
 ) {
     var starStates by remember { mutableStateOf(List(stars) { false }) }
 
@@ -257,7 +268,7 @@ fun RatingBar(
             Icon(
                 imageVector = Icons.Outlined.Star,
                 contentDescription = null,
-                tint = if (isFilled) starsColor else Color.Gray,
+                tint = if (isFilled) starsColor else PurpleGrey80,
                 modifier = Modifier
                     .padding(start = 10.dp)
                     .clickable { onStarClick(index) }

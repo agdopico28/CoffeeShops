@@ -6,19 +6,25 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -35,25 +41,34 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.coffeeshops.ui.theme.FontTitle
 import com.example.coffeeshops.ui.theme.Pink40
 import com.example.coffeeshops.ui.theme.Pink80
-
-
+import com.example.coffeeshops.ui.theme.Purple40
+import com.example.coffeeshops.ui.theme.Purple80
+import com.example.coffeeshops.ui.theme.PurpleGrey40
+import com.example.coffeeshops.ui.theme.PurpleGrey80
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun COmentarios(navControllerName:String, navController: NavHostController) {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val listState = rememberLazyStaggeredGridState()
+    val nombreCafeteria = navBackStackEntry?.arguments?.getString("cafeteriaName") ?: ""
     var isMenuVisible by remember { mutableStateOf(false) }
+    val buttonVisible = remember { mutableStateOf(true) }
     val configuration = LocalConfiguration.current
     when (configuration.orientation) {
         Configuration.ORIENTATION_LANDSCAPE -> {
@@ -97,7 +112,7 @@ fun COmentarios(navControllerName:String, navController: NavHostController) {
                                 onDismissRequest = {
                                     isMenuVisible = false
                                 },
-                                modifier = Modifier.background(Pink80)
+                                modifier = Modifier.background(PurpleGrey80)
                             ) {
                                 DropdownMenuItem(
                                     text = {
@@ -136,7 +151,7 @@ fun COmentarios(navControllerName:String, navController: NavHostController) {
                             }
                         }
                     },
-                    colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = Pink40)
+                    colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = Purple40)
                 )
             }
             ) {
@@ -146,13 +161,42 @@ fun COmentarios(navControllerName:String, navController: NavHostController) {
                         ItemsComentario(comentario = lazy)
                     }
                 }*/
-                Column (modifier= Modifier.padding(top = 55.dp) ){
-                    LazyVerticalStaggeredGrid(columns = StaggeredGridCells.Fixed(2)){
+                Column (modifier= Modifier.padding(top = 15.dp) ){
+                    Row(Modifier.fillMaxWidth().padding(top = 60.dp),horizontalArrangement = Arrangement.Center) {
+                        Text(
+                            text = nombreCafeteria,
+                            fontFamily = FontTitle,
+                            fontSize = 32.sp,
+                            color = Color.Black,
+                        )
+                    }
+                    LazyVerticalStaggeredGrid(columns = StaggeredGridCells.Fixed(2), state = listState){
 
                         items(getComentario().size) { coment ->
                             ItemsComentario(comentario = coment)
                         }
-                    }}
+                    }
+                    val scrollOffset = listState.firstVisibleItemScrollOffset
+                    if (scrollOffset > 0 && buttonVisible.value) {
+                        buttonVisible.value = false
+                    } else if (scrollOffset == 0 && !buttonVisible.value) {
+                        buttonVisible.value = true
+                    }
+                }
+                Box(modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.BottomCenter) {
+                    if (!buttonVisible.value) {
+                        Button(
+                            onClick = {  },
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .height(48.dp),
+                            colors = ButtonDefaults.buttonColors(Purple80),
+                        ) {
+                            Text(text = "Add new comment")
+                        }
+                    }
+                }
                 }
 
             }
@@ -194,7 +238,9 @@ fun ItemsComentario(comentario: Int) {
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
-                Text(text = coment[comentario], fontSize = 16.sp)
+                Text(text = coment[comentario], fontSize = 16.sp,
+                        textAlign = TextAlign.Start,
+                    modifier = Modifier.padding(start = 8.dp, top = 8.dp, bottom = 8.dp))
             }
 
 
