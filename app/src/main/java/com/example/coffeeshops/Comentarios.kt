@@ -65,126 +65,43 @@ import com.example.coffeeshops.ui.theme.PurpleGrey80
 @Composable
 fun COmentarios(navControllerName:String, navController: NavHostController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val listState = rememberLazyStaggeredGridState()
-    val nombreCafeteria = navBackStackEntry?.arguments?.getString("cafeteriaName") ?: ""
-    var isMenuVisible by remember { mutableStateOf(false) }
+    val listState = rememberLazyStaggeredGridState() //
+    val nombreCafeteria = navBackStackEntry?.arguments?.getString("cafeteriaName") ?: ""  //pasa el nombre de la pantalla anterior
     val buttonVisible = remember { mutableStateOf(true) }
-    val configuration = LocalConfiguration.current
-    when (configuration.orientation) {
-        Configuration.ORIENTATION_LANDSCAPE -> {
-        }
 
-        else -> {
             Scaffold(topBar = {
-                TopAppBar(
-                    title = {
-                        Text(text = "CoffeeShops", color = Color.White, fontSize = 20.sp)
-                    },
-                    navigationIcon = {
-                        IconButton(
-                            onClick = {
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = null,
-                                tint = Color.White
-                            )
-                        }
-                    },
-                    actions = {
-                        Row() {
-                            IconButton(
-                                onClick = {
-                                    isMenuVisible = true
-                                }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.MoreVert,
-                                    contentDescription = null,
-                                    tint = Color.White
-                                )
-                            }
-                        }
-                        Row() {
-                            DropdownMenu(
-                                expanded = isMenuVisible,
-                                onDismissRequest = {
-                                    isMenuVisible = false
-                                },
-                                modifier = Modifier.background(PurpleGrey80)
-                            ) {
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = "Compartir",
-                                            color = Color.Black,
-                                            fontSize = 16.sp
-                                        )
-                                    },
-                                    onClick = { isMenuVisible = false },
-                                    leadingIcon = {
-                                        Icon(
-                                            imageVector = Icons.Default.Share,
-                                            contentDescription = null,
-                                            tint = Color.Black
-                                        )
-                                    },
-                                )
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = "Album",
-                                            color = Color.Black,
-                                            fontSize = 16.sp
-                                        )
-                                    },
-                                    onClick = { isMenuVisible = false },
-                                    leadingIcon = {
-                                        Icon(
-                                            imageVector = Icons.Default.Lock,
-                                            contentDescription = null,
-                                            tint = Color.Black
-                                        )
-                                    },
-                                )
-                            }
-                        }
-                    },
-                    colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = Purple40)
-                )
+                MyTopAppBar()
             }
             ) {
-/*
-                LazyColumn {
-                    items(getComentario()) { lazy ->
-                        ItemsComentario(comentario = lazy)
-                    }
-                }*/
                 Column (modifier= Modifier.padding(top = 15.dp) ){
-                    Row(Modifier.fillMaxWidth().padding(top = 60.dp),horizontalArrangement = Arrangement.Center) {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 60.dp),horizontalArrangement = Arrangement.Center) {
                         Text(
-                            text = nombreCafeteria,
+                            text = nombreCafeteria, // la variable que tenemos arriba
                             fontFamily = FontTitle,
                             fontSize = 32.sp,
                             color = Color.Black,
                         )
                     }
-                    LazyVerticalStaggeredGrid(columns = StaggeredGridCells.Fixed(2), state = listState){
 
+                    LazyVerticalStaggeredGrid(columns = StaggeredGridCells.Fixed(2), state = listState){ //implementa llos comentarios en dos columnas
+                                                                                        // y le pasas tambien el estado de la lista para después poner un boton
                         items(getComentario().size) { coment ->
                             ItemsComentario(comentario = coment)
                         }
                     }
-                    val scrollOffset = listState.firstVisibleItemScrollOffset
-                    if (scrollOffset > 0 && buttonVisible.value) {
+
+                    val scrollOffset = listState.firstVisibleItemScrollOffset //para que cuando scrolles se haga visible
+                    if (scrollOffset > 0 && buttonVisible.value) { //si esta arriba del todo no se ensañara el boton
                         buttonVisible.value = false
-                    } else if (scrollOffset == 0 && !buttonVisible.value) {
+                    } else if (scrollOffset == 0 && !buttonVisible.value) { //si esta bajado se mostrara el boto
                         buttonVisible.value = true
                     }
                 }
                 Box(modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.BottomCenter) {
+                    contentAlignment = Alignment.BottomCenter) { //el boto nque aparece si scrolleas
                     if (!buttonVisible.value) {
                         Button(
                             onClick = {  },
@@ -201,10 +118,9 @@ fun COmentarios(navControllerName:String, navController: NavHostController) {
 
             }
 
-        }
-    }
 
 
+ //almacena todos los comentarios
 fun getComentario(): List<String> {
     return listOf(
         "Servicio algo flojo, aún así lo recomiendo",
@@ -221,7 +137,7 @@ fun getComentario(): List<String> {
         )
 }
 @Composable
-fun ItemsComentario(comentario: Int) {
+fun ItemsComentario(comentario: Int) { //crea las cartas que llevan los comentarios
     val coment = getComentario()
     Card(
         Modifier
@@ -238,8 +154,9 @@ fun ItemsComentario(comentario: Int) {
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
-                Text(text = coment[comentario], fontSize = 16.sp,
-                        textAlign = TextAlign.Start,
+                Text(
+                    text = coment[comentario], fontSize = 16.sp, //recorre la lista de los comentarios y  introduce el comentario que le has pasado a la funcion
+                    textAlign = TextAlign.Start,
                     modifier = Modifier.padding(start = 8.dp, top = 8.dp, bottom = 8.dp))
             }
 

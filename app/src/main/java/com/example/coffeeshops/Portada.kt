@@ -63,103 +63,25 @@ import com.example.coffeeshops.ui.theme.PurpleGrey80
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun Portada( navController: NavHostController){
-    var isMenuVisible by remember { mutableStateOf(false) }
-    val configuration = LocalConfiguration.current
-    when (configuration.orientation) {
-        Configuration.ORIENTATION_LANDSCAPE -> {
-        }
 
-        else -> {
-            Scaffold (topBar = { TopAppBar(
-                title = {
-                    Text(text = "CoffeeShops", color = Color.White, fontSize = 20.sp)
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Menu,
-                            contentDescription = null,
-                            tint = Color.White
-                        )
-                    }
-                },
-                actions = {
-                    Row (){
-                        IconButton(
-                            onClick = {
-                                isMenuVisible = true
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.MoreVert,
-                                contentDescription = null,
-                                tint = Color.White
-                            )
-                        }
-                    }
-                    Row (){
-                        DropdownMenu(
-                            expanded = isMenuVisible,
-                            onDismissRequest = {
-                                isMenuVisible = false
-                            },
-                            modifier = Modifier.background(PurpleGrey80)
-                        ) {
-                            DropdownMenuItem(
-                                text = {
-                                    Text(
-                                        text = "Compartir",
-                                        color = Color.Black,
-                                        fontSize = 16.sp
-                                    )
-                                },
-                                onClick = { isMenuVisible = false },
-                                leadingIcon = {Icon(
-                                    imageVector = Icons.Default.Share,
-                                    contentDescription = null,
-                                    tint = Color.Black
-                                ) },
-                            )
-                            DropdownMenuItem(
-                                text = {
-                                    Text(
-                                        text = "Album",
-                                        color = Color.Black,
-                                        fontSize = 16.sp
-                                    )
-                                },
-                                onClick = { isMenuVisible = false },
-                                leadingIcon = {Icon(
-                                    imageVector = Icons.Default.Lock,
-                                    contentDescription = null,
-                                    tint = Color.Black
-                                ) },
-                            )
-                        }
-                    }
-                },
-                colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = Purple40)
-            )}
-                ) {
-                Column (modifier= Modifier.padding(top = 60.dp)){
-                    LazyColumn {
+
+            Scaffold (topBar = { MyTopAppBar()}
+                ) {                     //calcula el espacio que necesita el topBar
+                Column (modifier= Modifier.padding(top = it.calculateTopPadding())){
+                    LazyColumn { //recorre las cartas creadas en las otras funciones y las implemeta en una columna
                         items(getCardCoffee()) { lazy ->
-                            ItemsCoffe(cardCoffee = lazy, navController= navController)
+                            ItemsCoffe(cardCoffee = lazy, navController= navController)  //el nav controller hace que conectes las cartas con otra pantalla
+                                                                                            // y te puedas llevar el nombre del cafe
                         }
                     }}
                 }
 
 
         }
-    }
 
-}
 data class CardCoffee(var name:String, var subbit:String, @DrawableRes var image :Int)
-
-fun getCardCoffee(): List<CardCoffee> {
+//inicias la clase con los valores que despues vayas a querer implementar
+fun getCardCoffee(): List<CardCoffee> { //rellenas los valores creados en la anterior data class
     return listOf(
         CardCoffee(
             "Antico Caffè Greco",
@@ -201,17 +123,17 @@ fun getCardCoffee(): List<CardCoffee> {
 }
 @Composable
 fun ItemsCoffe(cardCoffee: CardCoffee, navController: NavHostController) {
-    Card(
+    Card( //creamos una carta
         Modifier
             .fillMaxWidth()
             .padding(16.dp)
-            .clickable { navController.navigate("Comentarios/${cardCoffee.name}") },
+            .clickable { navController.navigate("Comentarios/${cardCoffee.name}") }, //al clicar la carta se guarda el nombre del cafe
         elevation = CardDefaults.cardElevation(10.dp)
     ) {
         Column (
             verticalArrangement = Arrangement.Center
         ){
-            Image(
+            Image( //la foto que lleva cada carta
                 painter = painterResource(id = cardCoffee.image),
                 contentDescription = "Coffee",
                 modifier= Modifier
@@ -219,24 +141,32 @@ fun ItemsCoffe(cardCoffee: CardCoffee, navController: NavHostController) {
                     .size(200.dp),
                 contentScale = ContentScale.Crop
             )
-            Row( modifier= Modifier
+            Row(
+                modifier= Modifier
                 .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center) {
+                horizontalArrangement = Arrangement.Center)
+            {//el nombre de cada caffe
                 Text(text = cardCoffee.name, fontFamily = FontTitle, fontSize = 30.sp)
             }
 
             Spacer(modifier = Modifier.size(10.dp))
 
-            RatingBar()
+            RatingBar() //las estrellas que esta en otra funcion mas abajo
+
             Spacer(modifier = Modifier.size(10.dp))
+
             Row( modifier= Modifier
                 .fillMaxWidth()
-                .padding(start = 5.dp)) {
+                .padding(start = 5.dp))
+            {//la direccion tambien guardad en la data class
                 Text(text = cardCoffee.subbit)
             }
             Spacer(modifier = Modifier.size(10.dp))
-            Divider()
-            TextButton(onClick = { /*TODO*/ },
+
+            Divider()  //pone una raya entre la direccion y el boton
+
+            TextButton( //un boton que no hace nada solo pone RESERVE
+                onClick = { /*TODO*/ },
                 colors = ButtonDefaults.filledTonalButtonColors(
                     containerColor = Color.Transparent, contentColor = Purple40
             )) {
@@ -250,11 +180,10 @@ fun ItemsCoffe(cardCoffee: CardCoffee, navController: NavHostController) {
 @Composable
 fun RatingBar(
     modifier: Modifier = Modifier,
-    stars: Int = 5,
-    starsColor: Color = Purple40
+    stars: Int = 5, //las estrellas que son
+    starsColor: Color = Purple40 //el color del que se pintara cuando cliques encima
 ) {
     var starStates by remember { mutableStateOf(List(stars) { false }) }
-
 
     val onStarClick: (Int) -> Unit = { starIndex ->
         starStates = starStates.mapIndexed { index, _ ->
@@ -268,7 +197,7 @@ fun RatingBar(
             Icon(
                 imageVector = Icons.Outlined.Star,
                 contentDescription = null,
-                tint = if (isFilled) starsColor else PurpleGrey80,
+                tint = if (isFilled) starsColor else PurpleGrey80, //si no esta seleccionadas pintar las estrellas de gris
                 modifier = Modifier
                     .padding(start = 10.dp)
                     .clickable { onStarClick(index) }
@@ -278,9 +207,85 @@ fun RatingBar(
 }
 
 
-
 @OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MyTopAppBar(){
-    TopAppBar(title={ Text(text = "TopAppBar")})
+    var isMenuVisible by remember { mutableStateOf(false) }
+    TopAppBar(//barra de menu parte superior de la pantalla
+        title = {
+            Text(text = "CoffeeShops", color = Color.White, fontSize = 20.sp) //nombre que aparece en la barra
+        },
+        navigationIcon = {
+            IconButton(
+                onClick = {
+                }
+            ) {
+                Icon(//Icono de las tres barras horizontales
+                    imageVector = Icons.Default.Menu,
+                    contentDescription = null,
+                    tint = Color.White
+                )
+            }
+        },
+        actions = {
+            Row (){
+                IconButton( //Icono de los tres puntos que cuando clicas aparece el dropdownMenu
+                    onClick = {
+                        isMenuVisible = true
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = null,
+                        tint = Color.White
+                    )
+                }
+            }
+            Row (){
+                DropdownMenu(
+                    expanded = isMenuVisible, //hace que se expanda el menu
+                    onDismissRequest = { //se cierra el menu una vez se haya clicado encima de él
+                        isMenuVisible = false
+                    },
+                    modifier = Modifier.background(PurpleGrey80)
+                ) {
+                    DropdownMenuItem( //el item de compartir
+                        text = {
+                            Text(
+                                text = "Compartir",
+                                color = Color.Black,
+                                fontSize = 16.sp
+                            )
+                        },
+                        onClick = { isMenuVisible = false }, //desaparece al pulsarle
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Share,
+                                contentDescription = null,
+                                tint = Color.Black
+                            ) },
+                    )
+                    DropdownMenuItem( //item de album
+                        text = {
+                            Text(
+                                text = "Album",
+                                color = Color.Black,
+                                fontSize = 16.sp
+                            )
+                        },
+                        onClick = { isMenuVisible = false }, //desaparece al pulsarle
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Lock,
+                                contentDescription = null,
+                                tint = Color.Black
+                            ) },
+                    )
+                }
+            }
+        },
+        colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = Purple40)
+    )
 }
+
