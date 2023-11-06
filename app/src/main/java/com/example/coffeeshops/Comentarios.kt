@@ -65,7 +65,7 @@ import com.example.coffeeshops.ui.theme.PurpleGrey80
 @Composable
 fun COmentarios(navControllerName:String, navController: NavHostController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val listState = rememberLazyStaggeredGridState() //
+    val listState = rememberLazyStaggeredGridState() 
     val nombreCafeteria = navBackStackEntry?.arguments?.getString("cafeteriaName") ?: ""  //pasa el nombre de la pantalla anterior
     val buttonVisible = remember { mutableStateOf(true) }
 
@@ -86,7 +86,7 @@ fun COmentarios(navControllerName:String, navController: NavHostController) {
                         )
                     }
 
-                    LazyVerticalStaggeredGrid(columns = StaggeredGridCells.Fixed(2), state = listState){ //implementa llos comentarios en dos columnas
+                    LazyVerticalStaggeredGrid(columns = StaggeredGridCells.Fixed(2), state = listState){ //implementa los comentarios en dos columnas
                                                                                         // y le pasas tambien el estado de la lista para después poner un boton
                         items(getComentario().size) { coment ->
                             ItemsComentario(comentario = coment)
