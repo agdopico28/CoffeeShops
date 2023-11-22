@@ -148,8 +148,8 @@ fun ItemsComentario(comentario: Int) { //crea las cartas que llevan los comentar
         Modifier
             .fillMaxWidth()
             .padding(16.dp)
-            .clickable { rotationState += 180f }//hace que gire 180 grados
-            .graphicsLayer(rotationX = rotation),//si esto lo cambias por la variable rotationState hara la rotacion pero a golpes
+            .clickable { rotationState += 360f }//hace que gire 180 grados
+            .graphicsLayer(rotationZ= rotation),//si esto lo cambias por la variable rotationState hara la rotacion pero a golpes
         elevation = CardDefaults.cardElevation(10.dp)
     ) {
         Column(
